@@ -12,46 +12,67 @@ namespace Alura.ByteBank.Dados.Repositorio
 {
     public class AgenciaRepositorio : IAgenciaRepositorio
     {
-        private readonly ByteBankContexto _contexto;
+        //private readonly ByteBankContexto _contexto;
+        private readonly List<Agencia> _listaAgencia;
         public AgenciaRepositorio()
         {
-            _contexto = new ByteBankContexto();
+            //_contexto = new ByteBankContexto();
+            var agencia1 = new Agencia
+            {
+                Id = 1,
+                Numero = 123,
+                Nome = "Agencia Central",
+                Endereco = "Rua: Pedro Alvares Cabral,63",
+                Identificador = Guid.Parse("1447c0e7-c328-47e0-a39f-116e5ab597b3")
+            };
+            var agencia2 = new Agencia
+            {
+                Id = 2,
+                Numero = 321,
+                Nome = "Agencia Flores",
+                Endereco = "Rua: Odete Roitman, 84",
+                Identificador = Guid.Parse(" a05e08ca-e501-4719-87c4-a7f95c7f8f15")
+
+            };
+        
+            _listaAgencia = new List<Agencia> { agencia1, agencia2 };
         }
+
         public bool Adicionar(Agencia agencia)
         {
             try
             {
-                _contexto.Agencias.Add(agencia);
-                _contexto.SaveChanges();
+                _listaAgencia.Add(agencia);                
 
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
 
         public bool Atualizar(int id, Agencia agencia)
         {
-            
+
             try
             {
                 if (id != agencia.Id)
                 {
                     return false;
                 }
-                _contexto.Entry(agencia).State = EntityState.Modified;
-                _contexto.SaveChanges();
+                
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
 
         public bool Excluir(int id)
         {
-            var agencia = _contexto.Agencias.FirstOrDefault(p => p.Id == id);
+            var agencia = _listaAgencia.FirstOrDefault(p => p.Id == id);
 
             try
             {
@@ -59,11 +80,11 @@ namespace Alura.ByteBank.Dados.Repositorio
                 {
                     return false;
                 }
-                _contexto.Agencias.Remove(agencia);
-                _contexto.SaveChanges();
+                _listaAgencia.Remove(agencia);                
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
@@ -72,16 +93,16 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var agencia = _contexto.Agencias.FirstOrDefault(p => p.Id == id);
-                if(agencia == null)
+                var agencia = _listaAgencia.FirstOrDefault(p => p.Id == id);
+                if (agencia == null)
                 {
                     throw new Exception($"Erro ao obter agência com Id = {id}.");
                 }
                 return agencia;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-               throw new Exception(ex.Message) ;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -89,7 +110,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var agencia = _contexto.Agencias.FirstOrDefault(p => p.Identificador == guid);
+                var agencia = _listaAgencia.FirstOrDefault(p => p.Identificador == guid);
                 if (agencia == null)
                 {
                     return null;
@@ -106,7 +127,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                return _contexto.Agencias.ToList();
+                return _listaAgencia.ToList();
             }
             catch
             {
@@ -116,7 +137,7 @@ namespace Alura.ByteBank.Dados.Repositorio
 
         public void Dispose()
         {
-            _contexto.Dispose();
+            //_contexto.Dispose();
             GC.SuppressFinalize(this);
         }
     }

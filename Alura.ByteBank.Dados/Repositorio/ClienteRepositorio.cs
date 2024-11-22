@@ -12,46 +12,76 @@ namespace Alura.ByteBank.Dados.Repositorio
 {
     public class ClienteRepositorio : IClienteRepositorio
     {
-        private readonly ByteBankContexto _contexto;
+        //private readonly ByteBankContexto _contexto;
+        private readonly List<Cliente> _listaCliente;
         public ClienteRepositorio()
         {
-            _contexto = new ByteBankContexto();
+            //_contexto = new ByteBankContexto();            
+            var cliente1 = new Cliente
+            {
+                Id = 1,
+                CPF = "307.522.040-09",
+                Nome = "André Silva",
+                Profissao = "Developer",
+                Identificador = Guid.Parse("531e5270-8a80-4a2c-8b20-f10182f728fc")
+            };
+            var cliente2 = new Cliente
+            {
+                Id = 2,
+                CPF = "510.711.260-91",
+                Nome = "João Pedro",
+                Profissao = "Developer",
+                Identificador = Guid.Parse("20cd1c01-5fbf-40b7-b41b-0341bd38fc32")
+
+            };
+            var cliente3 = new Cliente
+            {
+                Id = 3,
+                CPF = "224.182.250-70",
+                Nome = "José Neves",
+                Profissao = "Atleta De Poker",
+                Identificador = Guid.Parse("20cd1c01-5fbf-40b7-b41b-0341bd38fc32")
+
+            };
+
+            _listaCliente = new List<Cliente> { cliente1, cliente2, cliente3 };
+
         }
         public bool Adicionar(Cliente cliente)
         {
             try
             {
-                _contexto.Clientes.Add(cliente);
-                _contexto.SaveChanges();
+                _listaCliente.Add(cliente);               
 
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
 
-        public bool Atualizar(int id,Cliente cliente)
+        public bool Atualizar(int id, Cliente cliente)
         {
-            
+
             try
             {
                 if (id != cliente.Id)
                 {
                     return false;
                 }
-                _contexto.Entry(cliente).State = EntityState.Modified;
-                _contexto.SaveChanges();
+                
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
 
         public bool Excluir(int id)
         {
-            var cliente = _contexto.Clientes.FirstOrDefault(p => p.Id == id);
+            var cliente = _listaCliente.FirstOrDefault(p => p.Id == id);
 
             try
             {
@@ -59,11 +89,11 @@ namespace Alura.ByteBank.Dados.Repositorio
                 {
                     return false;
                 }
-                _contexto.Clientes.Remove(cliente);
-                _contexto.SaveChanges();
+                _listaCliente.Remove(cliente);
                 return true;
             }
-            catch{
+            catch
+            {
                 return false;
             }
         }
@@ -72,8 +102,8 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var cliente = _contexto.Clientes.FirstOrDefault(p => p.Id == id);
-                if(cliente == null)
+                var cliente = _listaCliente.FirstOrDefault(p => p.Id == id);
+                if (cliente == null)
                 {
                     return null;
                 }
@@ -81,7 +111,7 @@ namespace Alura.ByteBank.Dados.Repositorio
             }
             catch
             {
-               throw new Exception($"Erro ao obter cliente com Id = {id}.") ;
+                throw new Exception($"Erro ao obter cliente com Id = {id}.");
             }
         }
 
@@ -89,7 +119,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var cliente = _contexto.Clientes.FirstOrDefault(p => p.Identificador == guid);
+                var cliente = _listaCliente.FirstOrDefault(p => p.Identificador == guid);
                 if (cliente == null)
                 {
                     return null;
@@ -106,7 +136,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                return _contexto.Clientes.ToList();
+                return _listaCliente.ToList();
             }
             catch
             {
@@ -116,7 +146,6 @@ namespace Alura.ByteBank.Dados.Repositorio
 
         public void Dispose()
         {
-            _contexto.Dispose();
             GC.SuppressFinalize(this);
         }
     }

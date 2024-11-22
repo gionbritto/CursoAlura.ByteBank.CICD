@@ -8,25 +8,32 @@ using System.Linq;
 
 namespace Alura.ByteBank.Dados.Repositorio
 {
-    public class ContaCorrenteRepositorio: IContaCorrenteRepositorio
+    public class ContaCorrenteRepositorio : IContaCorrenteRepositorio
     {
-        private readonly ByteBankContexto _contexto;
+        //private readonly ByteBankContexto _contexto;
+        private readonly List<ContaCorrente> _listaContas;
         public ContaCorrenteRepositorio()
         {
-            _contexto = new ByteBankContexto();
+            //_contexto = new ByteBankContexto();
+            _listaContas = new List<ContaCorrente> {
+                new ContaCorrente(1, 4159, 1,2, 300,  Guid.Parse("1001b6f8-4fdb-44dd-a63d-850e6bf5e1d3"),  Guid.Parse("00000000-0000-0000-0000-000000000000")),
+                new ContaCorrente(2,1789, 1,2, 400,  Guid.Parse("fd3a2250-27d9-48f4-ae89-9eea10a93396"),  Guid.Parse("00000000-0000-0000-0000-000000000000"))
+            };
+
+            PreencherVinculos(_listaContas);
         }
+
         public bool Adicionar(ContaCorrente conta)
         {
             try
             {    //https://docs.microsoft.com/pt-br/ef/core/change-tracking/identity-resolution            
-                _contexto.ContaCorrentes.Update(conta);
-                _contexto.SaveChanges();
+                _listaContas.Add(conta);                
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new Exception(ex.InnerException.Message);                
+                throw new Exception(ex.InnerException.Message);
             }
         }
 
@@ -39,8 +46,7 @@ namespace Alura.ByteBank.Dados.Repositorio
                 {
                     return false;
                 }
-                _contexto.Entry(conta).State = EntityState.Modified;
-                _contexto.SaveChanges();
+              
                 return true;
             }
             catch
@@ -51,7 +57,7 @@ namespace Alura.ByteBank.Dados.Repositorio
 
         public bool Excluir(int id)
         {
-            var conta = _contexto.ContaCorrentes.FirstOrDefault(p => p.Id == id);
+            var conta = _listaContas.FirstOrDefault(p => p.Id == id);
 
             try
             {
@@ -59,8 +65,8 @@ namespace Alura.ByteBank.Dados.Repositorio
                 {
                     return false;
                 }
-                _contexto.ContaCorrentes.Remove(conta);
-                _contexto.SaveChanges();
+                _listaContas.Remove(conta);
+                
                 return true;
             }
             catch
@@ -73,8 +79,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var conta = _contexto.ContaCorrentes.Include(c => c.Cliente)
-                                                    .Include(x => x.Agencia).FirstOrDefault(p => p.Id == id);
+                var conta = _listaContas.FirstOrDefault(p => p.Id == id);
                 if (conta == null)
                 {
                     return null;
@@ -91,8 +96,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                var conta = _contexto.ContaCorrentes.Include(c=>c.Cliente)
-                                                    .Include(x=>x.Agencia).FirstOrDefault(p => p.Identificador == guid);
+                var conta = _listaContas.FirstOrDefault(p => p.Identificador == guid);
                 if (conta == null)
                 {
                     return null;
@@ -108,8 +112,7 @@ namespace Alura.ByteBank.Dados.Repositorio
         {
             try
             {
-                return _contexto.ContaCorrentes.Include(c => c.Cliente)
-                                               .Include(x => x.Agencia).ToList();
+                return _listaContas.ToList();
             }
             catch
             {
@@ -119,8 +122,18 @@ namespace Alura.ByteBank.Dados.Repositorio
 
         public void Dispose()
         {
-            _contexto.Dispose();
             GC.SuppressFinalize(this);
+        }
+
+        private void PreencherVinculos(List<ContaCorrente> listaContas)
+        {
+            foreach (var conta in listaContas)
+            {
+                var cliente = new ClienteRepositorio().ObterPorId(conta.ClienteId);
+                var agencia = new AgenciaRepositorio().ObterPorId(conta.AgenciaId);
+                conta.DefinirCliente(cliente);
+                conta.DefinirAgencia(agencia);
+            }            
         }
     }
 }

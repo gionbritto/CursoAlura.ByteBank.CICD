@@ -17,6 +17,18 @@ namespace Alura.ByteBank.Dominio.Entidades
         {
 
         }
+
+        public ContaCorrente(int id, int numero, int clienteId, int agenciaId, double saldo, Guid identificador,Guid pixConta)
+        {
+            Id = id;
+            Numero = numero;
+            Identificador = identificador;
+            Saldo = saldo;
+            PixConta = pixConta;
+            ClienteId = clienteId;
+            AgenciaId = agenciaId;
+        }
+
         private Cliente _cliente;
         
         public virtual Cliente Cliente {
@@ -65,10 +77,18 @@ namespace Alura.ByteBank.Dominio.Entidades
         }
         private Guid _pix;
         public Guid PixConta { get => _pix; set => _pix = value; }
+        public int ClienteId { get; private set; }
+        public int AgenciaId { get; private set; }
 
-        
+        public void DefinirCliente(Cliente cliente)
+        {
+            Cliente = cliente;
+        }
 
-
+        public void DefinirAgencia(Agencia agencia)
+        {
+            Agencia = agencia;
+        }
     }
     
 }
